@@ -7,9 +7,9 @@ const selectShopCollections = createSelector(
   (shop) => shop.collections
 );
 
-export const selectCollectionLoading = createSelector(
+export const selectCollectionFetching = createSelector(
   [selectShop],
-  (shop) => shop.isLoading
+  (shop) => shop.isFetching
 );
 
 export const selectShopCollectionsList = (limit) =>
