@@ -7,18 +7,24 @@ const selectShopCollections = createSelector(
   (shop) => shop.collections
 );
 
+export const selectCollectionLoading = createSelector(
+  [selectShop],
+  (shop) => shop.isLoading
+);
+
 export const selectShopCollectionsList = (limit) =>
   createSelector([selectShopCollections], (collections) =>
-    limit
-      ? Object.values(collections).map((collection) => ({
-          ...collection,
-          items: collection.items.filter((_, idx) => idx < limit),
-        }))
-      : Object.values(collections)
+    collections
+      ? limit
+        ? Object.values(collections).map((collection) => ({
+            ...collection,
+            items: collection.items.filter((_, idx) => idx < limit),
+          }))
+        : Object.values(collections)
+      : []
   );
 
 export const selectShopCollection = (collectionUrlParam) =>
-  createSelector(
-    [selectShopCollections],
-    (collections) => collections[collectionUrlParam]
+  createSelector([selectShopCollections], (collections) =>
+    collections ? collections[collectionUrlParam] : null
   );
