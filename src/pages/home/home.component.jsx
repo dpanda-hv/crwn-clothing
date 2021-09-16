@@ -1,12 +1,12 @@
 import React from 'react';
-import './home.styles.scss';
 
 import Directory from '../../components/directory/directory.component';
+import HomeContainer from './home.styles';
 
-const Home = (props) => (
-  <div className="home-page">
+const Home = () => (
+  <HomeContainer>
     <Directory />
-  </div>
+  </HomeContainer>
 );
 
 export default Home;
