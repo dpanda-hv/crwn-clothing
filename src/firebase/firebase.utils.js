@@ -1,5 +1,10 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import {
+  getAuth,
+  GoogleAuthProvider,
+  onAuthStateChanged,
+  signInWithPopup,
+} from 'firebase/auth';
 import {
   getFirestore,
   getDoc,
@@ -24,33 +29,34 @@ const app = initializeApp(firebaseConfig);
 export const auth = getAuth();
 export const firestore = getFirestore(app);
 
-const provider = new GoogleAuthProvider();
-provider.setCustomParameters({ prompt: 'select_account' });
+export const googleProvider = new GoogleAuthProvider();
+googleProvider.setCustomParameters({ prompt: 'select_account' });
 
-export const signInWithGoogle = () => signInWithPopup(auth, provider);
+export const signInWithGoogle = () => signInWithPopup(auth, googleProvider);
 
 export const createUserProfileDocument = async (userAuth, additionalData) => {
   if (!userAuth) return;
 
   const userRef = doc(firestore, `users/${userAuth.uid}`);
-  const snapShot = await getDoc(userRef);
+  let snapShot = await getDoc(userRef);
 
   if (!snapShot.exists()) {
     const { displayName, email } = userAuth;
     const createdAt = new Date();
     try {
-      setDoc(userRef, {
+      await setDoc(userRef, {
         displayName,
         email,
         createdAt,
         ...additionalData,
       });
+      snapShot = await getDoc(userRef);
     } catch (error) {
       console.log('error creating user', error.message);
     }
   }
 
-  return userRef;
+  return snapShot;
 };
 
 export const addCollectionAndDocuments = async (
@@ -84,4 +90,17 @@ export const convertCollectionsSnapshotToMap = (collections) => {
     acc[collection.routeName] = collection;
     return acc;
   }, {});
+};
+
+export const getCurrentUser = () => {
+  return new Promise((resolve, reject) => {
+    const unsubscribe = onAuthStateChanged(
+      auth,
+      (userAuth) => {
+        unsubscribe();
+        resolve(userAuth);
+      },
+      reject
+    );
+  });
 };
