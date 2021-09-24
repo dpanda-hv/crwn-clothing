@@ -21,6 +21,7 @@ import {
   signUpFailure,
   signUpSuccess,
 } from './user.actions';
+import { clearCart } from '../../graphql/mutations/cart';
 
 // Sign-in user with user auth data
 function* signInWithUserAuth(userAuth, additionalData) {
@@ -76,6 +77,7 @@ function* signOut() {
   try {
     yield auth.signOut();
     yield put(signOutSuccess());
+    clearCart();
   } catch (error) {
     yield put(signOutFailure(error));
   }

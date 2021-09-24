@@ -1,12 +1,11 @@
 import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+import { useQuery } from '@apollo/client';
 
-import { selectCartItems } from '../../redux/cart/cart.selector';
 import CartItem from '../cart-item/cart-item.component';
 import CustomButton from '../custom-button/custom-button.component';
-import { toggleCartDropdown } from '../../redux/cart/cart.actions';
-
+import { GET_CART_ITEMS } from '../../graphql/queries/cart';
+import { hideCart } from '../../graphql/mutations/cart';
 import {
   CartDropdownContainer,
   CartItemsContainer,
@@ -15,15 +14,14 @@ import {
 } from './cart-dropdown.styles';
 
 const CartDropdown = () => {
-  const cartItems = useSelector(selectCartItems);
-  const dispatch = useDispatch();
   const history = useHistory();
+  const { data } = useQuery(GET_CART_ITEMS);
 
   return (
     <CartDropdownContainer>
-      {cartItems.length ? (
+      {data.cartItems.length ? (
         <CartItemsContainer>
-          {cartItems.map((cartItem) => (
+          {data.cartItems.map((cartItem) => (
             <CartItem key={cartItem.id} item={cartItem} />
           ))}
         </CartItemsContainer>
@@ -34,7 +32,7 @@ const CartDropdown = () => {
         <CustomButton
           onClick={() => {
             history.push('/checkout');
-            dispatch(toggleCartDropdown());
+            hideCart();
           }}
         >
           GO TO CHECKOUT

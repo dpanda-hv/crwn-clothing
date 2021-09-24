@@ -1,15 +1,13 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
 import {
-  clearItemFromCart,
-  addItem,
-  removeItem,
-} from '../../redux/cart/cart.actions';
+  addCartItem,
+  removeCartItem,
+  clearCartItem,
+} from '../../graphql/mutations/cart';
 
 import './checkout-item.styles.scss';
 
 const CheckoutItem = ({ cartItem }) => {
-  const dispatch = useDispatch();
   const { name, price, quantity, imageUrl } = cartItem;
 
   return (
@@ -20,18 +18,15 @@ const CheckoutItem = ({ cartItem }) => {
       <div className="name">{name}</div>
       <div className="price">${price}</div>
       <div className="quantity">
-        <span className="arrow" onClick={() => dispatch(removeItem(cartItem))}>
+        <span className="arrow" onClick={() => removeCartItem(cartItem)}>
           &#10094;
         </span>
         <span className="value">{quantity}</span>
-        <span className="arrow" onClick={() => dispatch(addItem(cartItem))}>
+        <span className="arrow" onClick={() => addCartItem(cartItem)}>
           &#10095;
         </span>
       </div>
-      <div
-        className="remove-button"
-        onClick={() => dispatch(clearItemFromCart(cartItem))}
-      >
+      <div className="remove-button" onClick={() => clearCartItem(cartItem)}>
         &#10005;
       </div>
     </div>

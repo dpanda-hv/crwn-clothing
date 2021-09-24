@@ -1,18 +1,17 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useQuery } from '@apollo/client';
+
+import { GET_CART_ITEMS } from '../../graphql/queries/cart';
+import { getCartTotal } from '../../graphql/mutations/cart';
 import CheckoutItem from '../../components/checkout-item/checkout-item.component';
-import {
-  selectCartItems,
-  selectCartTotal,
-} from '../../redux/cart/cart.selector';
 
 import StripeButton from '../../components/stripe-button/stripe-button.component';
 
 import './checkout.styles.scss';
 
 const Checkout = () => {
-  const cartItems = useSelector(selectCartItems);
-  const total = useSelector(selectCartTotal);
+  const { data } = useQuery(GET_CART_ITEMS);
+  const total = getCartTotal();
 
   return (
     <div className="checkout">
@@ -33,7 +32,7 @@ const Checkout = () => {
           <span>Remove</span>
         </div>
       </div>
-      {cartItems.map((cartItem) => (
+      {data.cartItems.map((cartItem) => (
         <CheckoutItem key={cartItem.id} cartItem={cartItem} />
       ))}
       <div className="total">
