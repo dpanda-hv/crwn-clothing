@@ -7,13 +7,6 @@ import {
 import UserActionTypes from './user.types';
 
 import {
-  auth,
-  createUserProfileDocument,
-  getCurrentUser,
-  signInWithGoogle as signInWithGoogleProvider,
-} from '../../firebase/firebase.utils';
-
-import {
   signInSuccess,
   signInFailure,
   signOutSuccess,
@@ -22,6 +15,13 @@ import {
   signUpSuccess,
 } from './user.actions';
 import { clearCart } from '../../graphql/mutations/cart';
+
+const {
+  auth,
+  createUserProfileDocument,
+  getCurrentUser,
+  signInWithGoogle: signInWithGoogleProvider,
+} = require('../../firebase');
 
 // Sign-in user with user auth data
 function* signInWithUserAuth(userAuth, additionalData) {

@@ -1,10 +1,10 @@
 import { ApolloClient } from '@apollo/client';
 
-import { cache } from './cache';
+import { cache } from './apollo.cache';
 
 export async function createClient() {
   return new ApolloClient({
-    uri: 'https://crwn-clothing.com/',
+    uri: '/graphql',
     cache,
   });
 }

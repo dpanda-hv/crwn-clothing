@@ -1,5 +1,6 @@
 const express = require('express');
 const path = require('path');
+const createApolloServer = require('./apollo/apollo.server');
 
 const app = express();
 
@@ -19,13 +20,17 @@ if (process.env.NODE_ENV === 'production') {
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const routes = require('./routes');
+const payment = require('./routes/payment');
 
-app.use(routes);
+app.use(payment);
 
-app.listen(PORT, (error) => {
-  if (error) {
-    throw error;
-  }
-  console.log(`APP is listening on port ${PORT}`);
+const apolloServer = createApolloServer(app);
+
+apolloServer.then(() => {
+  app.listen(PORT, (error) => {
+    if (error) {
+      throw error;
+    }
+    console.log(`APP is listening on port ${PORT}`);
+  });
 });

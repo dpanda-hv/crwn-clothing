@@ -1,18 +1,18 @@
-import { initializeApp } from 'firebase/app';
-import {
+const { initializeApp } = require('firebase/app');
+const {
   getAuth,
   GoogleAuthProvider,
   onAuthStateChanged,
   signInWithPopup,
-} from 'firebase/auth';
-import {
+} = require('firebase/auth');
+const {
   getFirestore,
   getDoc,
   doc,
   setDoc,
   collection,
   writeBatch,
-} from 'firebase/firestore';
+} = require('firebase/firestore');
 
 const firebaseConfig = {
   apiKey: 'AIzaSyDnd1gRfurbdsI4vaZxuF2p4VHZKT8cnZA',
@@ -26,15 +26,15 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-export const auth = getAuth();
-export const firestore = getFirestore(app);
+const auth = getAuth();
+const firestore = getFirestore(app);
 
-export const googleProvider = new GoogleAuthProvider();
+const googleProvider = new GoogleAuthProvider();
 googleProvider.setCustomParameters({ prompt: 'select_account' });
 
-export const signInWithGoogle = () => signInWithPopup(auth, googleProvider);
+const signInWithGoogle = () => signInWithPopup(auth, googleProvider);
 
-export const createUserProfileDocument = async (userAuth, additionalData) => {
+const createUserProfileDocument = async (userAuth, additionalData) => {
   if (!userAuth) return;
 
   const userRef = doc(firestore, `users/${userAuth.uid}`);
@@ -59,10 +59,7 @@ export const createUserProfileDocument = async (userAuth, additionalData) => {
   return snapShot;
 };
 
-export const addCollectionAndDocuments = async (
-  collectionKey,
-  documentsToAdd
-) => {
+const addCollectionAndDocuments = async (collectionKey, documentsToAdd) => {
   const collectionRef = collection(firestore, collectionKey);
 
   const batch = writeBatch(firestore);
@@ -75,7 +72,14 @@ export const addCollectionAndDocuments = async (
   return await batch.commit();
 };
 
-export const convertCollectionsSnapshotToMap = (collections) => {
+const convertCollectionsToMap = (collections) => {
+  return collections.reduce((acc, collection) => {
+    acc[collection.routeName] = collection;
+    return acc;
+  }, {});
+};
+
+const getCollectionsFromSnapshot = (collections) => {
   const transformedCollections = collections.docs.map((doc) => {
     const { title, items } = doc.data();
     return {
@@ -86,13 +90,10 @@ export const convertCollectionsSnapshotToMap = (collections) => {
     };
   });
 
-  return transformedCollections.reduce((acc, collection) => {
-    acc[collection.routeName] = collection;
-    return acc;
-  }, {});
+  return transformedCollections;
 };
 
-export const getCurrentUser = () => {
+const getCurrentUser = () => {
   return new Promise((resolve, reject) => {
     const unsubscribe = onAuthStateChanged(
       auth,
@@ -103,4 +104,16 @@ export const getCurrentUser = () => {
       reject
     );
   });
+};
+
+module.exports = {
+  auth,
+  firestore,
+  googleProvider,
+  signInWithGoogle,
+  addCollectionAndDocuments,
+  createUserProfileDocument,
+  getCollectionsFromSnapshot,
+  convertCollectionsToMap,
+  getCurrentUser,
 };
